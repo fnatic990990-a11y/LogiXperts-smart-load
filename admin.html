@@ -210,13 +210,6 @@
     .two-column{
       display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,0.9fr);gap:14px;
     }
-
-    .right-column{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
     @media(max-width:900px){
       .two-column{grid-template-columns:minmax(0,1fr);}
       header{flex-direction:column;align-items:flex-start;}
@@ -267,13 +260,7 @@
       padding:9px 10px;border-radius:12px;border:1px solid #374151;
       background:#020617;color:var(--text);font-size:13px;
     }
-    textarea{
-      padding:9px 10px;border-radius:12px;border:1px solid #374151;
-      background:#020617;color:var(--text);font-size:13px;
-      resize:vertical;
-      min-height:80px;
-    }
-    input:focus,select:focus,textarea:focus{border-color:#22c55e;outline:none;}
+    input:focus,select:focus{border-color:#22c55e;outline:none;}
 
     .password-input{
       display:flex;align-items:center;gap:6px;
@@ -734,71 +721,29 @@
             </form>
           </div>
 
-          <!-- RIGHT COLUMN: AI Tools + CSV -->
-          <div class="right-column">
-            <!-- AI TOOLS CARD -->
-            <div class="card">
-              <div class="card-header">
-                <div>
-                  <div class="card-title" id="ai_title">AI Tools</div>
-                  <div class="card-sub" id="ai_sub">
-                    Use AI to analyze trips and generate reports (demo).
-                  </div>
+          <!-- CSV UPLOAD -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title" id="csv_title">Upload Your Trips CSV</div>
+                <div class="card-sub" id="csv_sub">
+                  Upload trip history to improve optimization accuracy.
                 </div>
               </div>
+            </div>
 
+            <form class="signup-form" onsubmit="event.preventDefault(); analyzeCSV();">
               <div class="field">
-                <label id="ai_trip_label">Trip description / notes</label>
-                <textarea
-                  id="ai_trip_text"
-                  placeholder="Paste trip summary or issues here..."
-                ></textarea>
+                <label id="csv_label">Choose CSV file</label>
+                <input id="csv_file" type="file" accept=".csv" />
               </div>
 
-              <button
-                class="btn btn-secondary"
-                type="button"
-                id="ai_trip_btn"
-                onclick="runAIToolsAnalysis()"
-              >
-                Generate AI insights (demo)
+              <button class="btn btn-secondary" id="btn_csv">
+                Analyze CSV
               </button>
 
-              <p class="hint" id="ai_trip_output"></p>
-
-              <div class="field" style="margin-top:10px;">
-                <label id="ai_pdf_label">PDF AI Report (coming soon)</label>
-                <input id="ai_pdf_file" type="file" accept=".pdf" />
-              </div>
-              <p class="hint" id="ai_pdf_hint">
-                In the real system this will send your PDF to an AI backend and return KPIs + summary.
-              </p>
-            </div>
-
-            <!-- CSV UPLOAD -->
-            <div class="card">
-              <div class="card-header">
-                <div>
-                  <div class="card-title" id="csv_title">Upload Your Trips CSV</div>
-                  <div class="card-sub" id="csv_sub">
-                    Upload trip history to improve optimization accuracy.
-                  </div>
-                </div>
-              </div>
-
-              <form class="signup-form" onsubmit="event.preventDefault(); analyzeCSV();">
-                <div class="field">
-                  <label id="csv_label">Choose CSV file</label>
-                  <input id="csv_file" type="file" accept=".csv" />
-                </div>
-
-                <button class="btn btn-secondary" id="btn_csv">
-                  Analyze CSV
-                </button>
-
-                <p id="csv_message" class="hint"></p>
-              </form>
-            </div>
+              <p id="csv_message" class="hint"></p>
+            </form>
           </div>
         </div>
       </section>
@@ -837,50 +782,6 @@
             <canvas id="optChart"></canvas>
           </div>
         </div>
-
-        <!-- OPTIMIZATION SCENARIOS CARD -->
-        <div class="card" style="margin-top:14px;">
-          <div class="card-header">
-            <div>
-              <div class="card-title" id="opt_scenarios_title">Optimization Scenarios</div>
-              <div class="card-sub" id="opt_scenarios_sub">
-                Examples of how Smart Load Analyzer improves utilization.
-              </div>
-            </div>
-          </div>
-
-          <div class="truck-list">
-            <div class="truck-row header">
-              <div id="opt_scenarios_col_name">Scenario</div>
-              <div id="opt_scenarios_col_result">Impact</div>
-              <div id="opt_scenarios_col_note">Notes</div>
-            </div>
-
-            <div class="truck-row">
-              <div>Merge low-load return trip with new shipment</div>
-              <div><span class="chip good">+18% load factor</span></div>
-              <div>Assign new load to empty-backhaul truck instead of creating a new trip.</div>
-            </div>
-
-            <div class="truck-row">
-              <div>Shift flexible shipment to night route</div>
-              <div><span class="chip warn">-9% cost</span></div>
-              <div>Use cheaper night tariff while keeping SLA within 24 hours.</div>
-            </div>
-
-            <div class="truck-row">
-              <div>Consolidate two partial city deliveries</div>
-              <div><span class="chip good">-15% CO₂</span></div>
-              <div>Combine nearby drops in one route instead of two half-empty trucks.</div>
-            </div>
-
-            <div class="truck-row">
-              <div>Block unprofitable urgent request</div>
-              <div><span class="chip bad">Avoid loss</span></div>
-              <div>AI flags trips where revenue &lt; variable cost to prevent accepting bad orders.</div>
-            </div>
-          </div>
-        </div>
       </section>
     </main>
 
@@ -908,9 +809,8 @@
     </footer>
   </div>
 
-  <!-- ===== كل الجافاسكربت داخل module واحد مع Firebase ===== -->
+  <!-- ===== Firebase + المنطق كامل في سكربت واحد ===== -->
   <script type="module">
-    // Firebase modular imports من CDN
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
     import {
       getAuth,
@@ -927,7 +827,7 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-    // نفس إعدادات مشروعك
+    // إعدادات مشروعك الحقيقية (لا تعدّلها)
     const firebaseConfig = {
       apiKey: "AIzaSyAjbvQo7NrGZiFbFbdY3a7UtDjlv0SwU3w",
       authDomain: "smart-load-analyzer-56cb2.firebaseapp.com",
@@ -938,7 +838,6 @@
       measurementId: "G-60RF97SGWN"
     };
 
-    // تهيئة Firebase
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
@@ -1019,15 +918,6 @@
         label_priority: "Priority",
         btn_manual_analyze: "Run Manual Optimization",
 
-        // AI Tools
-        ai_title: "AI Tools",
-        ai_sub: "Use AI to analyze trips and generate reports (demo).",
-        ai_trip_label: "Trip description / notes",
-        ai_trip_placeholder: "Paste trip summary or issues here...",
-        ai_trip_btn: "Generate AI insights (demo)",
-        ai_pdf_label: "PDF AI Report (coming soon)",
-        ai_pdf_hint: "In the real system this will send your PDF to an AI backend and return KPIs + summary.",
-
         csv_title: "Upload Your Trips CSV",
         csv_sub: "Upload trip history to improve optimization accuracy.",
         csv_label: "Choose CSV file",
@@ -1041,13 +931,6 @@
 
         chart_title: "Before vs After Optimization",
         chart_sub: "Average load improvement",
-
-        // Optimization scenarios card
-        opt_scenarios_title: "Optimization Scenarios",
-        opt_scenarios_sub: "Examples of how Smart Load Analyzer improves utilization.",
-        opt_scenarios_col_name: "Scenario",
-        opt_scenarios_col_result: "Impact",
-        opt_scenarios_col_note: "Notes",
 
         support_title: "Customer Support",
         support_phone_label: "Phone:",
@@ -1127,15 +1010,6 @@
         label_priority: "الأولوية",
         btn_manual_analyze: "تشغيل التحسين اليدوي",
 
-        // AI Tools
-        ai_title: "أدوات الذكاء الاصطناعي",
-        ai_sub: "استخدم الذكاء الاصطناعي لتحليل الرحلات وإنشاء تقارير (عرض تجريبي).",
-        ai_trip_label: "وصف / ملاحظات الرحلة",
-        ai_trip_placeholder: "الصق وصف الرحلة أو المشكلة هنا...",
-        ai_trip_btn: "توليد تحليلات بالذكاء الاصطناعي (تجريبي)",
-        ai_pdf_label: "تقرير PDF بالذكاء الاصطناعي (قريبًا)",
-        ai_pdf_hint: "في النسخة الفعلية سيتم إرسال ملف PDF لمحرك ذكاء اصطناعي وإرجاع ملخص + مؤشرات أداء.",
-
         csv_title: "رفع ملف الرحلات (CSV)",
         csv_sub: "ارفع سجل الرحلات لتحسين دقة التحسين.",
         csv_label: "اختر ملف CSV",
@@ -1149,12 +1023,6 @@
 
         chart_title: "قبل وبعد التحسين",
         chart_sub: "تحسن متوسط الحمولة",
-
-        opt_scenarios_title: "سيناريوهات التحسين",
-        opt_scenarios_sub: "أمثلة على كيف يحسّن النظام استغلال الشاحنات.",
-        opt_scenarios_col_name: "السيناريو",
-        opt_scenarios_col_result: "الأثر",
-        opt_scenarios_col_note: "ملاحظات",
 
         support_title: "خدمة العملاء",
         support_phone_label: "الهاتف:",
@@ -1238,16 +1106,6 @@
       document.getElementById("label_priority").innerText = t.label_priority;
       document.getElementById("btn_manual_analyze").innerText = t.btn_manual_analyze;
 
-      // AI tools texts
-      document.getElementById("ai_title").innerText = t.ai_title;
-      document.getElementById("ai_sub").innerText = t.ai_sub;
-      document.getElementById("ai_trip_label").innerText = t.ai_trip_label;
-      const aiTripText = document.getElementById("ai_trip_text");
-      if (aiTripText) aiTripText.placeholder = t.ai_trip_placeholder;
-      document.getElementById("ai_trip_btn").innerText = t.ai_trip_btn;
-      document.getElementById("ai_pdf_label").innerText = t.ai_pdf_label;
-      document.getElementById("ai_pdf_hint").innerText = t.ai_pdf_hint;
-
       document.getElementById("csv_title").innerText = t.csv_title;
       document.getElementById("csv_sub").innerText = t.csv_sub;
       document.getElementById("csv_label").innerText = t.csv_label;
@@ -1261,12 +1119,6 @@
 
       document.getElementById("chart_title").innerText = t.chart_title;
       document.getElementById("chart_sub").innerText = t.chart_sub;
-
-      document.getElementById("opt_scenarios_title").innerText = t.opt_scenarios_title;
-      document.getElementById("opt_scenarios_sub").innerText = t.opt_scenarios_sub;
-      document.getElementById("opt_scenarios_col_name").innerText = t.opt_scenarios_col_name;
-      document.getElementById("opt_scenarios_col_result").innerText = t.opt_scenarios_col_result;
-      document.getElementById("opt_scenarios_col_note").innerText = t.opt_scenarios_col_note;
 
       document.getElementById("support_title").innerText = t.support_title;
       document.getElementById("support_phone_label").innerText = t.support_phone_label;
@@ -1310,7 +1162,6 @@
       dammam:  [26.4207, 50.0888],
     };
 
-    // default baseline من السيناريو (لو الشركة ما سجلت شيء)
     let baselineAvgLoad =
       trucksScenario.reduce((sum, t) => sum + t.currentLoad, 0) / trucksScenario.length;
     let baselineCost = trucksScenario.length * BASE_TRIP_COST;
@@ -1326,11 +1177,6 @@
     const views = document.querySelectorAll(".view");
 
     function setActiveView(id) {
-      // حماية إضافية: لا يسمح بغير login-view بدون تسجيل دخول
-      if (!isLoggedIn && id !== "login-view") {
-        id = "login-view";
-      }
-
       tabs.forEach(t => {
         t.classList.toggle("active", t.getAttribute("data-view") === id);
       });
@@ -1366,7 +1212,7 @@
       }
     }
 
-    // ===== signUp حقيقي مع companyCode =====
+    // ===== signUp =====
     async function signUp() {
       const name = document.getElementById("signup-name").value.trim();
       const email = document.getElementById("signup-email").value.trim().toLowerCase();
@@ -1383,17 +1229,14 @@
       }
 
       try {
-        // إنشاء مستخدم في Auth
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCred.user.uid;
 
-        // توليد كود الشركة تلقائي
         let base = name.replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 4);
         if (!base) base = "COMP";
-        const random = Math.floor(100 + Math.random() * 900); // 100-999
-        const companyCode = base + random; // مثال: LOGI123
+        const random = Math.floor(100 + Math.random() * 900);
+        const companyCode = base + random;
 
-        // حفظ بيانات الشركة في Firestore
         await setDoc(doc(db, "companies", uid), {
           companyName: name,
           email,
@@ -1409,7 +1252,6 @@
           `تم إنشاء حساب الشركة. كود الشركة الخاص بك: ${companyCode}. يمكنك تسجيل الدخول الآن.`;
         msg.textContent = currentLang === "ar" ? msgAr : msgEn;
 
-        // تعبئة فورم الدخول تلقائيًا
         document.getElementById("company").value = email;
         document.getElementById("password").value = password;
 
@@ -1421,7 +1263,7 @@
       }
     }
 
-    // ===== Login حقيقي مع قراءة بيانات الشركة =====
+    // ===== Login =====
     async function demoLogin() {
       const email = document.getElementById("company").value.trim().toLowerCase();
       const password = document.getElementById("password").value;
@@ -1445,7 +1287,6 @@
         handleLoginSuccess(uid, companyData);
         errorEl.textContent = "";
 
-        // عرض كود الشركة في تلميح بسيط
         if (companyData.companyCode) {
           const hint = currentLang === "ar"
             ? `تم تسجيل الدخول. كود الشركة: ${companyData.companyCode}.`
@@ -1461,7 +1302,6 @@
     }
 
     function initCompanyStats(statsFromDb) {
-      // إعداد القيم الافتراضية
       const defaultStats = {
         avgLoad: baselineAvgLoad * 100,
         dailyCost: baselineCost,
@@ -1482,7 +1322,6 @@
 
       companyStats = stats;
 
-      // تحديث baseline العالمي من بيانات الشركة
       if (stats.avgLoad && stats.avgLoad > 0) {
         baselineAvgLoad = stats.avgLoad / 100;
       }
@@ -1493,7 +1332,6 @@
         baselineCO2 = stats.dailyCO2;
       }
 
-      // تحديث واجهة الأرقام
       const loadPct = (baselineAvgLoad * 100).toFixed(0) + "%";
       document.getElementById("kpi-load-before").textContent = loadPct;
       document.getElementById("hero-load-before").textContent = loadPct;
@@ -1502,7 +1340,6 @@
       document.getElementById("kpi-co2-before").textContent = "~" + baselineCO2.toFixed(0) + " kg";
       document.getElementById("hero-co2-before").textContent = "~" + baselineCO2.toFixed(0) + " kg";
 
-      // تعبئة الفورم
       const loadInput = document.getElementById("stats-load");
       const costInput = document.getElementById("stats-cost");
       const co2Input = document.getElementById("stats-co2");
@@ -1555,10 +1392,8 @@
       currentCompanyId = uid;
       currentCompanyData = companyData || null;
 
-      // تهيئة إحصائيات الشركة (لو موجودة)
       initCompanyStats(companyData && companyData.stats ? companyData.stats : null);
 
-      // عرض كود الشركة في الهيدر
       if (companyData && companyData.companyCode) {
         const badge = document.getElementById("company_code_badge");
         const valueEl = document.getElementById("company_code_value");
@@ -1568,11 +1403,9 @@
         }
       }
 
-      // إنشاء الرسوم البيانية بناءً على baseline الحالي
       initCharts(baselineAvgLoad, baselineAvgLoad);
       populateOptimizationTableInitial();
 
-      // إظهار التبويبات
       document.getElementById("tab_login").style.display = "none";
       document.getElementById("tab_dashboard").style.display = "inline-flex";
       document.getElementById("tab_analyze").style.display = "inline-flex";
@@ -1880,25 +1713,6 @@
       setActiveView("optimization-view");
     }
 
-    // AI Tools demo logic
-    function runAIToolsAnalysis() {
-      if (!isLoggedIn) return;
-      const text = (document.getElementById("ai_trip_text").value || "").trim();
-      const out = document.getElementById("ai_trip_output");
-
-      if (!text) {
-        out.textContent = currentLang === "ar"
-          ? "اكتب وصف الرحلة أو المشكلة أولاً."
-          : "Please write a short description of the trip or issue first.";
-        return;
-      }
-
-      // تحليل تجريبي ثابت – جاهز للربط مع باك-إند فعلي
-      out.textContent = currentLang === "ar"
-        ? "تحليل تجريبي: الرحلة تبدو مناسبة للدمج مع رحلة عودة منخفضة الحمولة أو رحلة ليلية لتقليل التكلفة والانبعاثات. في النسخة الفعلية سيتم تحليل البيانات التاريخية ومسارات الشاحنات قبل إعطاء التوصية."
-        : "Demo insight: this trip looks suitable for merging with a low-load return or shifting to a night route to cut cost and emissions. In the real system, the AI would read historical trips and routes before suggesting this.";
-    }
-
     window.addEventListener("load", () => {
       document.getElementById("tab_login").style.display = "inline-flex";
       document.getElementById("tab_dashboard").style.display = "none";
@@ -1914,14 +1728,13 @@
       populateOptimizationTableInitial();
     });
 
-    // ربط الدوال بـ window ليتعرف عليها الـ HTML
+    // expose to window
     window.toggleLanguage  = toggleLanguage;
     window.togglePassword  = togglePassword;
     window.demoLogin       = demoLogin;
     window.signUp          = signUp;
     window.runOptimization = runOptimization;
     window.analyzeCSV      = analyzeCSV;
-    window.runAIToolsAnalysis = runAIToolsAnalysis;
   </script>
 </body>
 </html>
