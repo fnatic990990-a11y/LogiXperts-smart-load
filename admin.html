@@ -50,12 +50,14 @@
       border-radius: 26px;
       background: radial-gradient(circle at left top, #22c55e20, #020617 55%);
       border: 1px solid #1f2937;
+      flex-wrap: wrap;
     }
 
     .brand-group {
       display: flex;
       align-items: center;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .brand { display: flex; align-items: center; gap: 14px; }
@@ -102,7 +104,7 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-      justify-content: flex-end;
+      margin-left: auto;
     }
 
     .lang-switch {
@@ -115,16 +117,26 @@
       cursor: pointer;
     }
 
-    .team-pill,
-    .company-pill {
+    .team-pill {
       padding: 8px 14px; border-radius: 999px;
       border: 1px solid #1f2937; background:#020617b3;
       display:inline-flex; align-items:center; gap:8px;
       font-size:12px; color:var(--muted);
-      white-space: nowrap;
     }
     .team-pill span { color:#bbf7d0; font-weight:600; }
-    .company-pill span.code { color:#bfdbfe; font-weight:600; }
+
+    .company-code-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid #16a34a;
+      background: #022c22;
+      font-size: 12px;
+      color: #bbf7d0;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
 
     .hero {
       display:flex; flex-wrap:wrap; gap:20px;
@@ -190,7 +202,7 @@
     }
     .card-header{
       display:flex;justify-content:space-between;align-items:baseline;
-      gap:10px;margin-bottom:10px;
+      gap:10px;margin-bottom:10px;flex-wrap:wrap;
     }
     .card-title{font-size:16px;font-weight:600;}
     .card-sub{font-size:12px;color:var(--muted);}
@@ -203,7 +215,7 @@
       header{flex-direction:column;align-items:flex-start;}
       .hero{flex-direction:column;}
       .hero-metric{width:100%;}
-      .header-right{justify-content:flex-start;}
+      .header-right{margin-left:0;}
     }
 
     .kpi-grid{
@@ -302,6 +314,26 @@
     .hint{font-size:11px;color:var(--muted);margin-top:4px;}
     .hint-error{color:#fecaca;}
 
+    /* stats form */
+    .stats-form {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #111827;
+    }
+    .stats-form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      align-items: end;
+    }
+    .small-field label {
+      font-size: 11px;
+    }
+    .small-field input {
+      font-size: 12px;
+      padding: 7px 9px;
+    }
+
     .support-footer{
       margin-top:16px;
       display:flex;
@@ -338,57 +370,6 @@
 
     footer{margin-top:4px;font-size:10px;color:#4b5563;text-align:right;}
     footer span{color:#a7f3d0;}
-
-    /* Company metrics section */
-    .company-metrics{
-      margin-bottom:12px;
-      padding:10px 12px;
-      border-radius:18px;
-      border:1px solid #1f2937;
-      background:#020617;
-    }
-    .company-metrics-title{
-      font-size:12px;
-      color:#a7f3d0;
-      margin-bottom:8px;
-      font-weight:600;
-    }
-    .metrics-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-      gap:8px;
-      margin-bottom:8px;
-    }
-    .metrics-field label{
-      font-size:11px;
-      color:var(--muted);
-    }
-    .btn-metrics-save{
-      font-size:11px;
-      padding:6px 12px;
-    }
-
-    /* AI Alerts */
-    .ai-alerts{
-      margin-bottom:10px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      font-size:11px;
-    }
-    .ai-alert{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid #1f2937;
-      background:#020617;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .ai-alert.good{border-color:#16a34a;}
-    .ai-alert.warn{border-color:#f97316;}
-    .ai-alert.bad{border-color:#ef4444;}
-    .ai-alert-icon{font-size:12px;}
   </style>
 
   <!-- Chart.js -->
@@ -419,16 +400,16 @@
       </div>
 
       <div class="header-right">
-        <button class="lang-switch" id="langSwitcher" type="button" onclick="toggleLanguage()">AR</button>
+        <div class="company-code-pill" id="company_code_badge">
+          <span id="company_code_label">Company code:</span>
+          <span id="company_code_value"></span>
+        </div>
 
         <div class="team-pill">
           <span id="team_label">Team:</span>&nbsp;<span>Logixperts</span> | <span id="team_event">Naqlthon 4</span>
         </div>
 
-        <div class="company-pill" id="company_code_pill" style="display:none;">
-          <span id="company_code_label">Company code:</span>&nbsp;
-          <span class="code" id="company_code_value">-</span>
-        </div>
+        <button class="lang-switch" id="langSwitcher" type="button" onclick="toggleLanguage()">AR</button>
       </div>
     </header>
 
@@ -602,39 +583,6 @@
               <span class="pill"><span class="pill-dot"></span> Demo scenario</span>
             </div>
 
-            <!-- Company Metrics (baseline) -->
-            <div class="company-metrics">
-              <div class="company-metrics-title" id="metrics_title">
-                Company metrics (used as baseline)
-              </div>
-              <div class="metrics-grid">
-                <div class="metrics-field">
-                  <label id="metrics_label_avg_load">Avg load (%)</label>
-                  <input id="metrics-avg-load" type="number" min="0" max="100" step="1" placeholder="e.g. 65" />
-                </div>
-                <div class="metrics-field">
-                  <label id="metrics_label_cost">Op. cost / day (SAR)</label>
-                  <input id="metrics-daily-cost" type="number" min="0" step="1" placeholder="e.g. 15000" />
-                </div>
-                <div class="metrics-field">
-                  <label id="metrics_label_co2">CO₂ / day (kg)</label>
-                  <input id="metrics-daily-co2" type="number" min="0" step="1" placeholder="e.g. 4200" />
-                </div>
-              </div>
-              <button
-                class="btn btn-secondary btn-metrics-save"
-                id="metrics_save_btn"
-                type="button"
-                onclick="saveCompanyMetrics()"
-              >
-                Save metrics
-              </button>
-              <p id="metrics_message" class="hint"></p>
-            </div>
-
-            <!-- AI Alerts -->
-            <div id="ai-alerts" class="ai-alerts"></div>
-
             <div class="kpi-grid">
               <div class="kpi-card">
                 <div class="kpi-label" id="kpi_trucks_label">Trucks in scenario</div>
@@ -677,6 +625,31 @@
                 <div class="kpi-value" id="kpi-co2-after">–</div>
                 <div class="kpi-footnote" id="kpi-co2-savings">–</div>
               </div>
+            </div>
+
+            <!-- Company metrics form -->
+            <div class="stats-form">
+              <div class="stats-form-row">
+                <div class="field small-field">
+                  <label id="stats_label_load">Company avg load (%)</label>
+                  <input id="stats-load" type="number" min="0" max="100" step="1" />
+                </div>
+                <div class="field small-field">
+                  <label id="stats_label_cost">Company op. cost / day (SAR)</label>
+                  <input id="stats-cost" type="number" min="0" step="1" />
+                </div>
+                <div class="field small-field">
+                  <label id="stats_label_co2">Company CO₂ / day (kg)</label>
+                  <input id="stats-co2" type="number" min="0" step="1" />
+                </div>
+                <div class="field small-field">
+                  <label>&nbsp;</label>
+                  <button class="btn btn-secondary" type="button" id="stats-save-btn">
+                    Save metrics
+                  </button>
+                </div>
+              </div>
+              <p class="hint" id="stats_hint"></p>
             </div>
 
             <canvas id="dashboardChart"></canvas>
@@ -881,6 +854,8 @@
         team_label: "Team:",
         team_event: "Naqlthon 4",
 
+        company_code_label: "Company code:",
+
         hero_title: "Reduce Empty Trips. Boost Load Factor. Go Greener.",
         hero_sub: "Smart Load Analyzer helps freight companies analyze and optimize loads to reduce cost and emissions.",
         hero_highlight: "This demo scenario shows how merging a new shipment with a low-load return trip improves load factor.",
@@ -927,6 +902,12 @@
         kpi_co2_before_note: "kg CO₂",
         kpi_co2_after_label: "CO₂ / day (after)",
 
+        stats_label_load: "Company avg load (%)",
+        stats_label_cost: "Company op. cost / day (SAR)",
+        stats_label_co2: "Company CO₂ / day (kg)",
+        stats_save_btn: "Save metrics",
+        stats_hint_default: "These values are stored per company and reused on each login.",
+
         map_title: "Truck Positions & Routes",
         map_sub: "Best routes + load factor markers.",
 
@@ -957,22 +938,15 @@
         support_phone_label: "Phone:",
         support_email_label: "Email:",
         support_fax_label: "Fax:",
-        back_link: "← Back to role selection",
-
-        metrics_title: "Company metrics (used as baseline)",
-        metrics_label_avg_load: "Avg load (%)",
-        metrics_label_cost: "Op. cost / day (SAR)",
-        metrics_label_co2: "CO₂ / day (kg)",
-        metrics_save_btn: "Save metrics",
-        metrics_saved: "Metrics saved. Dashboard updated.",
-        metrics_error: "Please enter valid numbers.",
-        company_code_label: "Company code:"
+        back_link: "← Back to role selection"
       },
       ar: {
         brand: "لوچكسبرتس",
         subbrand: "نظام التحميل الذكي",
         team_label: "الفريق:",
         team_event: "نقل-ثون 4",
+
+        company_code_label: "كود الشركة:",
 
         hero_title: "قلل الرحلات الفارغة وارفع معامل الحمولة.",
         hero_sub: "يساعدك نظام التحميل الذكي على تحليل وتحسين حمولات الشاحنات لتقليل التكلفة والانبعاثات.",
@@ -1020,6 +994,12 @@
         kpi_co2_before_note: "كجم CO₂",
         kpi_co2_after_label: "انبعاثات CO₂ / اليوم (بعد)",
 
+        stats_label_load: "متوسط الحمولة للشركة (%)",
+        stats_label_cost: "تكلفة التشغيل / اليوم (ريال)",
+        stats_label_co2: "انبعاثات CO₂ / اليوم (كجم)",
+        stats_save_btn: "حفظ البيانات",
+        stats_hint_default: "يتم حفظ هذه القيم لكل شركة وتستخدم عند كل تسجيل دخول.",
+
         map_title: "مواقع ومسارات الشاحنات",
         map_sub: "أفضل المسارات + مؤشرات الحمولة.",
 
@@ -1050,16 +1030,7 @@
         support_phone_label: "الهاتف:",
         support_email_label: "البريد الإلكتروني:",
         support_fax_label: "فاكس:",
-        back_link: "← الرجوع لصفحة المستخدم",
-
-        metrics_title: "مؤشرات الشركة (الخط الأساس)",
-        metrics_label_avg_load: "متوسط الحمولة (%)",
-        metrics_label_cost: "تكلفة التشغيل / اليوم (ريال)",
-        metrics_label_co2: "انبعاثات CO₂ / اليوم (كجم)",
-        metrics_save_btn: "حفظ المؤشرات",
-        metrics_saved: "تم حفظ المؤشرات وتحديث لوحة التحكم.",
-        metrics_error: "يرجى إدخال أرقام صحيحة.",
-        company_code_label: "كود الشركة:"
+        back_link: "← الرجوع لصفحة المستخدم"
       }
     };
 
@@ -1070,6 +1041,9 @@
       document.getElementById("text_subbrand").innerText = t.subbrand;
       document.getElementById("team_label").innerText = t.team_label;
       document.getElementById("team_event").innerText = t.team_event;
+
+      const codeLabel = document.getElementById("company_code_label");
+      if (codeLabel) codeLabel.innerText = t.company_code_label;
 
       document.getElementById("hero_title").innerText = t.hero_title;
       document.getElementById("hero_sub").innerText = t.hero_sub;
@@ -1116,6 +1090,12 @@
       document.getElementById("kpi_co2_before_note").innerText = t.kpi_co2_before_note;
       document.getElementById("kpi_co2_after_label").innerText = t.kpi_co2_after_label;
 
+      document.getElementById("stats_label_load").innerText = t.stats_label_load;
+      document.getElementById("stats_label_cost").innerText = t.stats_label_cost;
+      document.getElementById("stats_label_co2").innerText = t.stats_label_co2;
+      document.getElementById("stats-save-btn").innerText = t.stats_save_btn;
+      document.getElementById("stats_hint").innerText = t.stats_hint_default;
+
       document.getElementById("map_title").innerText = t.map_title;
       document.getElementById("map_sub").innerText = t.map_sub;
 
@@ -1148,13 +1128,6 @@
       document.getElementById("support_fax_label").innerText = t.support_fax_label;
       document.getElementById("back_link").innerText = t.back_link;
 
-      document.getElementById("metrics_title").innerText = t.metrics_title;
-      document.getElementById("metrics_label_avg_load").innerText = t.metrics_label_avg_load;
-      document.getElementById("metrics_label_cost").innerText = t.metrics_label_cost;
-      document.getElementById("metrics_label_co2").innerText = t.metrics_label_co2;
-      document.getElementById("metrics_save_btn").innerText = t.metrics_save_btn;
-      document.getElementById("company_code_label").innerText = t.company_code_label;
-
       if (currentLang === "ar") {
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
@@ -1166,10 +1139,6 @@
         document.getElementById("langSwitcher").innerText = "AR";
         document.querySelector(".support-title").style.textAlign = "left";
       }
-
-      // إعادة عرض الأرقام والتنبيهات مع اللغة الحالية
-      applyCompanyMetricsToUI();
-      updateAIAlerts();
     }
 
     function toggleLanguage() {
@@ -1177,7 +1146,7 @@
       applyLanguage();
     }
 
-    // ===== SCENARIO (demo) =====
+    // ===== SCENARIO =====
     const CAPACITY_TONS = 20;
     const BASE_TRIP_COST = 1000;
     const EMISSION_FACTOR = 2.7;
@@ -1195,21 +1164,17 @@
       dammam:  [26.4207, 50.0888],
     };
 
-    // قيم demo الأساسية
-    const baselineAvgLoad =
+    // default baseline من السيناريو (لو الشركة ما سجلت شيء)
+    let baselineAvgLoad =
       trucksScenario.reduce((sum, t) => sum + t.currentLoad, 0) / trucksScenario.length;
-    const baselineCost = trucksScenario.length * BASE_TRIP_COST;
-    const baselineCO2 = baselineCost * EMISSION_FACTOR;
-
-    // قيم الشركة (تُعدل بعد تسجيل الدخول أو حفظ المؤشرات)
-    let companyBaselineAvgLoad = baselineAvgLoad;
-    let companyBaselineCost = baselineCost;
-    let companyBaselineCO2 = baselineCO2;
+    let baselineCost = trucksScenario.length * BASE_TRIP_COST;
+    let baselineCO2 = baselineCost * EMISSION_FACTOR;
 
     let dashboardChart, optChart, mapInstance;
     let isLoggedIn = false;
     let currentCompanyId = null;
     let currentCompanyData = null;
+    let companyStats = null;
 
     const tabs = document.querySelectorAll(".nav-tab");
     const views = document.querySelectorAll(".view");
@@ -1344,111 +1309,94 @@
       }
     }
 
-    function applyCompanyMetricsToUI() {
-      const loadElHero = document.getElementById("hero-load-before");
-      const loadElKpi  = document.getElementById("kpi-load-before");
-      const costHero   = document.getElementById("hero-cost-before");
-      const costKpi    = document.getElementById("kpi-cost-before");
-      const co2Hero    = document.getElementById("hero-co2-before");
-      const co2Kpi     = document.getElementById("kpi-co2-before");
+    function initCompanyStats(statsFromDb) {
+      // إعداد القيم الافتراضية
+      const defaultStats = {
+        avgLoad: baselineAvgLoad * 100,
+        dailyCost: baselineCost,
+        dailyCO2: baselineCO2
+      };
 
-      const loadPctText =
-        isFinite(companyBaselineAvgLoad) && companyBaselineAvgLoad > 0
-          ? (companyBaselineAvgLoad * 100).toFixed(0) + "%"
-          : "–";
+      const stats = {
+        avgLoad: (statsFromDb && typeof statsFromDb.avgLoad === "number")
+          ? statsFromDb.avgLoad
+          : defaultStats.avgLoad,
+        dailyCost: (statsFromDb && typeof statsFromDb.dailyCost === "number")
+          ? statsFromDb.dailyCost
+          : defaultStats.dailyCost,
+        dailyCO2: (statsFromDb && typeof statsFromDb.dailyCO2 === "number")
+          ? statsFromDb.dailyCO2
+          : defaultStats.dailyCO2
+      };
 
-      const costText =
-        isFinite(companyBaselineCost) && companyBaselineCost > 0
-          ? "~" + companyBaselineCost.toFixed(0) + " SAR"
-          : "–";
+      companyStats = stats;
 
-      const co2Text =
-        isFinite(companyBaselineCO2) && companyBaselineCO2 > 0
-          ? "~" + companyBaselineCO2.toFixed(0) + " kg"
-          : "–";
+      // تحديث baseline العالمي من بيانات الشركة
+      if (stats.avgLoad && stats.avgLoad > 0) {
+        baselineAvgLoad = stats.avgLoad / 100;
+      }
+      if (stats.dailyCost && stats.dailyCost > 0) {
+        baselineCost = stats.dailyCost;
+      }
+      if (stats.dailyCO2 && stats.dailyCO2 > 0) {
+        baselineCO2 = stats.dailyCO2;
+      }
 
-      if (loadElHero) loadElHero.textContent = loadPctText;
-      if (loadElKpi)  loadElKpi.textContent  = loadPctText;
-      if (costHero)   costHero.textContent   = costText;
-      if (costKpi)    costKpi.textContent    = costText;
-      if (co2Hero)    co2Hero.textContent    = co2Text;
-      if (co2Kpi)     co2Kpi.textContent     = co2Text;
+      // تحديث واجهة الأرقام
+      const loadPct = (baselineAvgLoad * 100).toFixed(0) + "%";
+      document.getElementById("kpi-load-before").textContent = loadPct;
+      document.getElementById("hero-load-before").textContent = loadPct;
+      document.getElementById("kpi-cost-before").textContent = "~" + baselineCost.toFixed(0) + " SAR";
+      document.getElementById("hero-cost-before").textContent = "~" + baselineCost.toFixed(0) + " SAR";
+      document.getElementById("kpi-co2-before").textContent = "~" + baselineCO2.toFixed(0) + " kg";
+      document.getElementById("hero-co2-before").textContent = "~" + baselineCO2.toFixed(0) + " kg";
+
+      // تعبئة الفورم
+      const loadInput = document.getElementById("stats-load");
+      const costInput = document.getElementById("stats-cost");
+      const co2Input = document.getElementById("stats-co2");
+      if (loadInput) loadInput.value = stats.avgLoad.toFixed(0);
+      if (costInput) costInput.value = stats.dailyCost.toFixed(0);
+      if (co2Input) co2Input.value = stats.dailyCO2.toFixed(0);
     }
 
-    function updateAIAlerts() {
-      const container = document.getElementById("ai-alerts");
-      if (!container) return;
-      container.innerHTML = "";
+    async function saveCompanyStats() {
+      if (!isLoggedIn || !currentCompanyId) return;
 
-      const alerts = [];
+      const loadVal = parseFloat(document.getElementById("stats-load").value || "0");
+      const costVal = parseFloat(document.getElementById("stats-cost").value || "0");
+      const co2Val  = parseFloat(document.getElementById("stats-co2").value || "0");
+      const hintEl  = document.getElementById("stats_hint");
 
-      // بناء تنبيهات بناء على مؤشرات الشركة
-      if (isFinite(companyBaselineAvgLoad)) {
-        const pct = companyBaselineAvgLoad * 100;
-        if (pct < 55) {
-          alerts.push({
-            type: "bad",
-            icon: "⚠️",
-            text: currentLang === "ar"
-              ? `متوسط الحمولة منخفض (${pct.toFixed(0)}%). جرّب دمج رحلات العودة أو إعادة جدولة الخطوط ذات الطلب الضعيف.`
-              : `Average load is low (${pct.toFixed(0)}%). Consider consolidating return trips or rescheduling low-demand lanes.`
-          });
-        } else if (pct < 75) {
-          alerts.push({
-            type: "warn",
-            icon: "📈",
-            text: currentLang === "ar"
-              ? `متوسط الحمولة جيد (${pct.toFixed(0)}%)، لكن ما زال فيه مجال لرفع الاستغلال إلى 80%+.`
-              : `Average load is decent (${pct.toFixed(0)}%), but there is room to push utilization towards 80%+.`
-          });
-        } else {
-          alerts.push({
-            type: "good",
-            icon: "✅",
-            text: currentLang === "ar"
-              ? `معامل الحمولة مرتفع (${pct.toFixed(0)}%). حافظ على هذا المستوى وركّز على ثبات الأداء.`
-              : `Load factor is high (${pct.toFixed(0)}%). Maintain this level and focus on stability.`
-          });
-        }
-      }
-
-      if (isFinite(companyBaselineCost) && companyBaselineCost > 0) {
-        alerts.push({
-          type: "warn",
-          icon: "💸",
-          text: currentLang === "ar"
-            ? `تكلفة التشغيل اليومية الحالية تقريبية عند ~${companyBaselineCost.toFixed(0)} ريال. أي تحسن في الحمولة ينعكس مباشرة على هذا الرقم.`
-            : `Current daily operating cost is around ~${companyBaselineCost.toFixed(0)} SAR. Any load improvement directly impacts this.`
-        });
-      }
-
-      if (isFinite(companyBaselineCO2) && companyBaselineCO2 > 0) {
-        alerts.push({
-          type: "warn",
-          icon: "🌍",
-          text: currentLang === "ar"
-            ? `انبعاثات CO₂ اليومية ~${companyBaselineCO2.toFixed(0)} كجم. تقليل الرحلات الفارغة يخفّض هذا الرقم ويحسّن التوافق مع الأهداف البيئية.`
-            : `Daily CO₂ emissions are ~${companyBaselineCO2.toFixed(0)} kg. Reducing empty trips will lower this and support sustainability goals.`
-        });
-      }
-
-      if (alerts.length === 0) {
-        const text = currentLang === "ar"
-          ? "أدخل مؤشرات شركتك (الحمولة، التكلفة، الانبعاثات) لعرض تنبيهات ذكية هنا."
-          : "Enter your company metrics (load, cost, emissions) to see smart alerts here.";
-        const div = document.createElement("div");
-        div.className = "ai-alert warn";
-        div.innerHTML = `<span class="ai-alert-icon">🤖</span><span>${text}</span>`;
-        container.appendChild(div);
+      if (isNaN(loadVal) || isNaN(costVal) || isNaN(co2Val) || loadVal <= 0) {
+        hintEl.textContent = currentLang === "ar"
+          ? "يرجى إدخال قيم صحيحة، خاصة متوسط الحمولة."
+          : "Please enter valid values, especially average load.";
         return;
       }
 
-      alerts.forEach(a => {
-        const div = document.createElement("div");
-        div.className = `ai-alert ${a.type}`;
-        div.innerHTML = `<span class="ai-alert-icon">${a.icon}</span><span>${a.text}</span>`;
-        container.appendChild(div);
-      });
+      const newStats = {
+        avgLoad: loadVal,
+        dailyCost: costVal,
+        dailyCO2: co2Val
+      };
+
+      try {
+        await setDoc(
+          doc(db, "companies", currentCompanyId),
+          { stats: newStats },
+          { merge: true }
+        );
+        initCompanyStats(newStats);
+        hintEl.textContent = currentLang === "ar"
+          ? "تم حفظ بيانات الشركة بنجاح."
+          : "Company metrics saved.";
+      } catch (err) {
+        console.error(err);
+        hintEl.textContent = currentLang === "ar"
+          ? "حدث خطأ أثناء حفظ البيانات."
+          : "Error while saving metrics.";
+      }
     }
 
     function handleLoginSuccess(uid, companyData) {
@@ -1456,59 +1404,24 @@
       currentCompanyId = uid;
       currentCompanyData = companyData || null;
 
-      // تحديث baseline حسب بيانات الشركة لو موجودة
-      if (companyData && typeof companyData.avgLoadPercent === "number" && !isNaN(companyData.avgLoadPercent) && companyData.avgLoadPercent > 0) {
-        companyBaselineAvgLoad = companyData.avgLoadPercent / 100;
-      } else {
-        companyBaselineAvgLoad = baselineAvgLoad;
+      // تهيئة إحصائيات الشركة (لو موجودة)
+      initCompanyStats(companyData && companyData.stats ? companyData.stats : null);
+
+      // عرض كود الشركة في الهيدر
+      if (companyData && companyData.companyCode) {
+        const badge = document.getElementById("company_code_badge");
+        const valueEl = document.getElementById("company_code_value");
+        if (badge && valueEl) {
+          valueEl.textContent = companyData.companyCode;
+          badge.style.display = "inline-flex";
+        }
       }
 
-      if (companyData && typeof companyData.avgDailyCost === "number" && !isNaN(companyData.avgDailyCost) && companyData.avgDailyCost > 0) {
-        companyBaselineCost = companyData.avgDailyCost;
-      } else {
-        companyBaselineCost = baselineCost;
-      }
-
-      if (companyData && typeof companyData.avgDailyCO2 === "number" && !isNaN(companyData.avgDailyCO2) && companyData.avgDailyCO2 > 0) {
-        companyBaselineCO2 = companyData.avgDailyCO2;
-      } else {
-        companyBaselineCO2 = baselineCO2;
-      }
-
-      // ضبط الحقول في كارد مؤشرات الشركة
-      const avgLoadInput = document.getElementById("metrics-avg-load");
-      const costInput    = document.getElementById("metrics-daily-cost");
-      const co2Input     = document.getElementById("metrics-daily-co2");
-
-      if (avgLoadInput) {
-        avgLoadInput.value = companyData && typeof companyData.avgLoadPercent === "number"
-          ? companyData.avgLoadPercent
-          : "";
-      }
-      if (costInput) {
-        costInput.value = companyData && typeof companyData.avgDailyCost === "number"
-          ? companyData.avgDailyCost
-          : "";
-      }
-      if (co2Input) {
-        co2Input.value = companyData && typeof companyData.avgDailyCO2 === "number"
-          ? companyData.avgDailyCO2
-          : "";
-      }
-
-      // إظهار كود الشركة في الهيدر
-      const codePill = document.getElementById("company_code_pill");
-      const codeVal  = document.getElementById("company_code_value");
-      if (companyData && companyData.companyCode && codePill && codeVal) {
-        codeVal.textContent = companyData.companyCode;
-        codePill.style.display = "inline-flex";
-      }
-
-      applyCompanyMetricsToUI();
-      initCharts(companyBaselineAvgLoad, companyBaselineAvgLoad);
+      // إنشاء الرسوم البيانية بناءً على baseline الحالي
+      initCharts(baselineAvgLoad, baselineAvgLoad);
       populateOptimizationTableInitial();
-      updateAIAlerts();
 
+      // إظهار التبويبات
       document.getElementById("tab_login").style.display = "none";
       document.getElementById("tab_dashboard").style.display = "inline-flex";
       document.getElementById("tab_analyze").style.display = "inline-flex";
@@ -1574,7 +1487,7 @@
 
     function updateOptChart(loadAfter) {
       if (!optChart) return;
-      const beforeVal = companyBaselineAvgLoad * 100;
+      const beforeVal = baselineAvgLoad * 100;
       const afterVal = loadAfter * 100;
       optChart.data.datasets[0].data = [beforeVal, afterVal];
       optChart.update();
@@ -1717,35 +1630,27 @@
       const afterAvgLoad =
         trucks.reduce((sum, t) => sum + t.newLoad, 0) / trucks.length;
 
-      let costAfter, costSavePct, co2After, co2SavePct;
-      if (companyBaselineAvgLoad > 0 && afterAvgLoad > 0) {
-        costAfter = companyBaselineCost * (companyBaselineAvgLoad / afterAvgLoad);
-        costSavePct = ((companyBaselineCost - costAfter) / companyBaselineCost) * 100;
-        co2After = companyBaselineCO2 * (costAfter / companyBaselineCost);
-        co2SavePct = ((companyBaselineCO2 - co2After) / companyBaselineCO2) * 100;
-      } else {
-        costAfter = companyBaselineCost;
-        costSavePct = 0;
-        co2After = companyBaselineCO2;
-        co2SavePct = 0;
-      }
+      const costAfter = baselineCost * (baselineAvgLoad / afterAvgLoad);
+      const co2After = baselineCO2 * (costAfter / baselineCost);
 
       const loadAfterPct = (afterAvgLoad * 100).toFixed(0) + "%";
       document.getElementById("kpi-load-after").textContent = loadAfterPct;
 
       document.getElementById("kpi-cost-after").textContent = "~" + costAfter.toFixed(0) + " SAR";
+      const costSavePct = ((baselineCost - costAfter) / baselineCost) * 100;
       document.getElementById("kpi-cost-savings").textContent =
         costSavePct > 0
           ? `-${costSavePct.toFixed(1)}% vs baseline`
           : (currentLang === "ar" ? "لا يوجد توفير" : "No savings");
 
       document.getElementById("kpi-co2-after").textContent = "~" + co2After.toFixed(0) + " kg";
+      const co2SavePct = ((baselineCO2 - co2After) / baselineCO2) * 100;
       document.getElementById("kpi-co2-savings").textContent =
         co2SavePct > 0
           ? `-${co2SavePct.toFixed(1)}% vs baseline`
           : (currentLang === "ar" ? "لا يوجد توفير" : "No savings");
 
-      if (!dashboardChart || !optChart) initCharts(companyBaselineAvgLoad, afterAvgLoad);
+      if (!dashboardChart || !optChart) initCharts(baselineAvgLoad, afterAvgLoad);
       updateOptChart(afterAvgLoad);
 
       const suggestionById = {};
@@ -1764,7 +1669,7 @@
           `تم إسناد شحنة وزن <strong>${weight || 0} طن</strong> ` +
           `وحجم <strong>${volume || 0} م³</strong> إلى ` +
           `<strong>${target.id} (${target.origin} → ${target.dest})</strong>، ` +
-          `مما يرفع متوسط الحمولة من <strong>${(companyBaselineAvgLoad * 100).toFixed(0)}%</strong> ` +
+          `مما يرفع متوسط الحمولة من <strong>${(baselineAvgLoad * 100).toFixed(0)}%</strong> ` +
           `إلى <strong>${(afterAvgLoad * 100).toFixed(0)}%</strong>، ` +
           `مع تقليل تقريبي في تكلفة التشغيل بنسبة <strong>${Math.abs(costSavePct).toFixed(1)}%</strong> ` +
           `وانبعاثات CO₂ بنسبة <strong>${Math.abs(co2SavePct).toFixed(1)}%</strong>.`;
@@ -1773,7 +1678,7 @@
           `The new shipment of <strong>${weight || 0} tons</strong> / ` +
           `<strong>${volume || 0} m³</strong> is assigned to ` +
           `<strong>${target.id} (${target.origin} → ${target.dest})</strong>, ` +
-          `raising average fleet load from <strong>${(companyBaselineAvgLoad * 100).toFixed(0)}%</strong> ` +
+          `raising average fleet load from <strong>${(baselineAvgLoad * 100).toFixed(0)}%</strong> ` +
           `to <strong>${(afterAvgLoad * 100).toFixed(0)}%</strong>, ` +
           `with an estimated reduction of <strong>${Math.abs(costSavePct).toFixed(1)}%</strong> ` +
           `in operating cost and <strong>${Math.abs(co2SavePct).toFixed(1)}%</strong> in CO₂ emissions.`;
@@ -1787,60 +1692,16 @@
           priority,
           assignedTruckId: target.id,
           assignedRoute: `${target.origin} → ${target.dest}`,
-          baselineAvgLoad: companyBaselineAvgLoad,
+          baselineAvgLoad,
           afterAvgLoad,
-          baselineCost: companyBaselineCost,
+          baselineCost,
           costAfter,
-          baselineCO2: companyBaselineCO2,
+          baselineCO2,
           co2After
         });
       }
 
       setActiveView("optimization-view");
-    }
-
-    async function saveCompanyMetrics() {
-      if (!isLoggedIn || !currentCompanyId) return;
-
-      const avgLoadVal = parseFloat(document.getElementById("metrics-avg-load").value || "0");
-      const costVal    = parseFloat(document.getElementById("metrics-daily-cost").value || "0");
-      const co2Val     = parseFloat(document.getElementById("metrics-daily-co2").value || "0");
-      const msgEl      = document.getElementById("metrics_message");
-      const t          = translations[currentLang];
-
-      if (isNaN(avgLoadVal) || avgLoadVal <= 0 || avgLoadVal > 100 ||
-          isNaN(costVal)    || costVal <= 0 ||
-          isNaN(co2Val)     || co2Val <= 0) {
-        msgEl.textContent = t.metrics_error;
-        return;
-      }
-
-      try {
-        await setDoc(
-          doc(db, "companies", currentCompanyId),
-          {
-            avgLoadPercent: avgLoadVal,
-            avgDailyCost: costVal,
-            avgDailyCO2: co2Val
-          },
-          { merge: true }
-        );
-
-        // تحديث القيم في الواجهة
-        companyBaselineAvgLoad = avgLoadVal / 100;
-        companyBaselineCost    = costVal;
-        companyBaselineCO2     = co2Val;
-        applyCompanyMetricsToUI();
-        updateAIAlerts();
-        if (optChart) {
-          updateOptChart(companyBaselineAvgLoad);
-        }
-
-        msgEl.textContent = t.metrics_saved;
-      } catch (err) {
-        console.error(err);
-        msgEl.textContent = t.metrics_error;
-      }
     }
 
     function analyzeCSV() {
@@ -1874,19 +1735,22 @@
       document.getElementById("tab_analyze").style.display = "none";
       document.getElementById("tab_opt").style.display = "none";
 
+      const statsSaveBtn = document.getElementById("stats-save-btn");
+      if (statsSaveBtn) {
+        statsSaveBtn.addEventListener("click", saveCompanyStats);
+      }
+
       applyLanguage();
       populateOptimizationTableInitial();
-      updateAIAlerts();
     });
 
     // ربط الدوال بـ window ليتعرف عليها الـ HTML
-    window.toggleLanguage     = toggleLanguage;
-    window.togglePassword     = togglePassword;
-    window.demoLogin          = demoLogin;
-    window.signUp             = signUp;
-    window.runOptimization    = runOptimization;
-    window.analyzeCSV         = analyzeCSV;
-    window.saveCompanyMetrics = saveCompanyMetrics;
+    window.toggleLanguage  = toggleLanguage;
+    window.togglePassword  = togglePassword;
+    window.demoLogin       = demoLogin;
+    window.signUp          = signUp;
+    window.runOptimization = runOptimization;
+    window.analyzeCSV      = analyzeCSV;
   </script>
 </body>
 </html>
