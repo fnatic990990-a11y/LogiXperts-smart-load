@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Logixperts - Driver Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --card: #111827;
+      --accent: #22c55e;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      max-width: 900px;
+      width: 100%;
+      background: #020617;
+      border-radius: 32px;
+      border: 1px solid #1f2937;
+      padding: 22px 20px 20px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: calc(100vh - 48px);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px 8px;
+      border-radius: 26px;
+      background: radial-gradient(circle at left top, #22c55e20, #020617 55%);
+      border: 1px solid #1f2937;
+    }
+
+    main {
+      margin-top: 4px;
+      flex: 1;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .badge-logo {
+      width: 40px; height: 40px;
+      border-radius: 16px;
+      border: 1px solid #16a34a;
+      background: radial-gradient(circle at 30% 30%, #22c55e, #16a34a);
+      display: flex; align-items: center; justify-content: center;
+      color: #ecfdf5; font-weight: 800; font-size: 18px;
+      box-shadow: 0 10px 25px rgba(34,197,94,.55);
+    }
+
+    .brand-text h1 {
+      font-size: 18px; font-weight: 800;
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+
+    .brand-text span {
+      display:block; font-size:11px; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.12em; margin-top:1px;
+    }
+
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .tag-pill {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background:#020617b3;
+      font-size:11px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .lang-switch {
+      display:inline-flex;
+      border-radius:999px;
+      border:1px solid #1f2937;
+      overflow:hidden;
+      background:#020617;
+    }
+
+    .lang-btn {
+      padding:4px 10px;
+      font-size:11px;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      cursor:pointer;
+      min-width:36px;
+    }
+
+    .lang-btn.active {
+      background:var(--accent);
+      color:#022c22;
+      font-weight:600;
+    }
+
+    .view { display: none; animation: fade .2s ease-out; }
+    .view.active { display: block; }
+
+    @keyframes fade {
+      from { opacity:0; transform:translateY(3px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.45);
+      margin-bottom: 10px;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .card-title { font-size:17px; font-weight:600; }
+    .card-sub   { font-size:13px; color:var(--muted); }
+
+    .btn {
+      border:none;
+      padding:9px 14px;
+      border-radius:999px;
+      font-size:13px;
+      cursor:pointer;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+
+    .btn-primary {
+      background:linear-gradient(to right,#16a34a,#22c55e);
+      color:#ecfdf5;
+      box-shadow:0 10px 20px rgba(34,197,94,.45);
+    }
+
+    .btn-secondary {
+      background:#020617;
+      border:1px solid #374151;
+      color:#e5e7eb;
+    }
+
+    .btn-ghost {
+      background:transparent;
+      border:1px solid #374151;
+      color:#9ca3af;
+    }
+
+    .btn-sm {
+      padding:6px 10px;
+      font-size:11px;
+    }
+
+    .landing-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+      gap:16px;
+      margin-top:10px;
+    }
+
+    .option-card {
+      border-radius:18px;
+      border:1px solid #1f2937;
+      background:#020617;
+      padding:18px 16px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:10px;
+      min-height:150px;
+    }
+
+    .option-title { font-size:15px; font-weight:600; }
+
+    .option-card .btn {
+      width:100%;
+      margin-top:4px;
+    }
+
+    .form-grid {
+      display:grid;
+      gap:8px;
+      margin-top:6px;
+    }
+
+    label {
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:2px;
+    }
+
+    .field {
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    input {
+      padding:8px 9px;
+      border-radius:10px;
+      border:1px solid #374151;
+      background:#020617;
+      color:var(--text);
+      font-size:13px;
+    }
+    input:focus {
+      border-color:#22c55e;
+      outline:none;
+    }
+
+    .hint {
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    .hint-error {
+      color:#fecaca;
+    }
+
+    .two-column {
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);
+      gap:12px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .two-column {
+        grid-template-columns:minmax(0,1fr);
+      }
+    }
+
+    .status-pill {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 9px;
+      border-radius:999px;
+      font-size:11px;
+    }
+    .status-ok {
+      background:#052e16;
+      border:1px solid #16a34a;
+      color:#bbf7d0;
+    }
+    .status-warn {
+      background:#451a03;
+      border:1px solid #f97316;
+      color:#fed7aa;
+    }
+
+    .timeline {
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .timeline-item {
+      padding:5px 0;
+      border-bottom:1px solid #111827;
+    }
+    .timeline-item:last-child {
+      border-bottom:none;
+    }
+    .timeline-label {
+      font-size:12px;
+      color:#e5e7eb;
+      margin-bottom:1px;
+    }
+
+    footer {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #9ca3af;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .support-box {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #d1d5db;
+    }
+
+    .support-box h3 {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    .footer-brand {
+      font-size: 10px;
+      color: #4b5563;
+    }
+    .footer-brand span {
+      color: #a7f3d0;
+    }
+
+    .footer-left { text-align: left; }
+    .footer-right { text-align: right; }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <div class="badge-logo">Lx</div>
+        <div class="brand-text">
+          <h1>LOGIXPERTS</h1>
+          <span id="hdr_sub">SMART LOAD – DRIVER PORTAL</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <span class="tag-pill" id="hdr_tag">
+          Driver & Admin Access
+        </span>
+
+        <div class="lang-switch">
+          <button class="lang-btn active" id="btnLangEn" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" id="btnLangAr" onclick="setLanguage('ar')">عربي</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+
+      <!-- LANDING -->
+      <section id="view-landing" class="view active">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="land_title">Who is using this portal?</div>
+              <div class="card-sub" id="land_sub">Choose your role to continue.</div>
+            </div>
+          </div>
+
+          <div class="landing-grid">
+
+            <!-- ADMIN -->
+            <div class="option-card">
+              <div class="option-title" id="land_admin_title">I am an Admin</div>
+              <button class="btn btn-secondary"
+                onclick="goToAdmin()"
+                id="land_admin_btn">
+                Go to Admin Platform
+              </button>
+            </div>
+
+            <!-- DRIVER -->
+            <div class="option-card">
+              <div class="option-title" id="land_driver_title">
+                I am a Driver
+              </div>
+              <button class="btn btn-primary"
+                onclick="switchView('view-driver-login')"
+                id="land_driver_btn">
+                Continue as Driver
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DRIVER LOGIN -->
+      <section id="view-driver-login" class="view">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title" id="login_title">Driver Login</div>
+              <div class="card-sub" id="login_sub">Enter your Driver ID and Company Code.</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="switchView('view-landing')" id="login_back">
+              ⬅ Back
+            </button>
+          </div>
+
+          <form class="form-grid" onsubmit="event.preventDefault(); driverLogin();">
+            <div class="field">
+              <label for="driverId" id="login_driverId_label">Driver ID</label>
+              <input id="driverId" type="text" placeholder="e.g. 1023" />
+            </div>
+
+            <div class="field">
+              <label for="companyCode" id="login_company_label">Company Code</label>
+              <input id="companyCode" type="text" placeholder="e.g. LXPRT" />
+            </div>
+
+            <button class="btn btn-primary" type="submit"
+              id="login_btn">
+              Login as Driver
+            </button>
+
+            <p id="driverLoginMsg" class="hint"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- DRIVER DASHBOARD -->
+      <section id="view-driver-dashboard" class="view">
+        <div class="two-column">
+
+          <!-- Column 1 -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title" id="driverWelcome">Welcome, Driver</div>
+                <div class="card-sub" id="driverInfo">—</div>
+              </div>
+
+              <button class="btn btn-ghost btn-sm"
+                onclick="driverLogout()"
+                id="dash_logout">
+                Logout
+              </button>
+            </div>
+
+            <div>
+
+              <div class="status-pill status-ok" id="driverStatusPill">
+                ✅ Status: Ready for assignment
+              </div>
+
+              <div style="margin-top:10px;">
+                <div style="font-size:13px;font-weight:600;margin-bottom:3px;"
+                  id="dash_assign_title">
+                  Current Assignment
+                </div>
+                <div style="font-size:13px;color:var(--muted);" id="currentAssignment">
+                  No active assignment yet. Please wait for dispatch instructions.
+                </div>
+              </div>
+
+              <div style="margin-top:10px;">
+                <button class="btn btn-secondary btn-sm"
+                  onclick="markArrived()"
+                  id="dash_btn_arrived">
+                  Mark as Arrived at Location
+                </button>
+
+                <button class="btn btn-secondary btn-sm"
+                  onclick="markLoaded()"
+                  style="margin-inline-start:6px;"
+                  id="dash_btn_loaded">
+                  Confirm Loading Complete
+                </button>
+              </div>
+
+              <p class="hint" id="driverActionMsg"></p>
+
+            </div>
+          </div>
+
+          <!-- Column 2 -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title" id="dash_route_title">
+                  Today's Route & Instructions
+                </div>
+                <div class="card-sub" id="dash_route_sub">
+                  Simple guidance from operations — where to go and what to do.
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline" id="driverTimeline"></div>
+
+            <p class="hint"
+              style="margin-top:6px;"
+              id="dash_note">
+              This driver view is a simple prototype. Operations can update instructions per driver.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="footerBox" class="footer-left">
+      <div class="support-box">
+        <h3 id="sup_title">Customer Support</h3>
+        <p>📞 <span id="sup_phone_label">Phone:</span> +966 55 555 5555</p>
+        <p>📧 <span id="sup_email_label">Email:</span> support@logixperts.com</p>
+        <p>📠 <span id="sup_fax_label">Fax:</span> 011-1234567</p>
+      </div>
+
+      <div class="footer-brand">
+        <span>Logixperts</span> ·
+        <span id="foot_portal">Driver Portal</span> ·
+        Naqlthon 4
+      </div>
+    </footer>
+
+  </div>
+
+<script>
+  // ================= DATA =================
+  var translations = {
+    en: {
+      hdr_sub: "SMART LOAD – DRIVER PORTAL",
+      hdr_tag: "Driver & Admin Access",
+
+      land_title: "Who is using this portal?",
+      land_sub: "Choose your role to continue.",
+      land_admin_title: "I am an Admin",
+      land_driver_title: "I am a Driver",
+      land_admin_btn: "Go to Admin Platform",
+      land_driver_btn: "Continue as Driver",
+
+      login_title: "Driver Login",
+      login_sub: "Enter your Driver ID and Company Code.",
+      login_back: "⬅ Back",
+      login_driverId_label: "Driver ID",
+      login_company_label: "Company Code",
+      login_btn: "Login as Driver",
+      login_error_missing: "Please enter both Driver ID and Company Code.",
+      login_generic: "Logged in as generic driver (demo).",
+
+      dash_logout: "Logout",
+      dash_assign_title: "Current Assignment",
+      dash_status_ready: "✅ Status: Ready for assignment",
+      dash_status_arrived: "🟡 Status: Arrived at location, waiting for loading",
+      dash_status_loaded: "✅ Status: Loaded – ready to depart",
+      dash_route_title: "Today's Route & Instructions",
+      dash_route_sub: "Simple guidance from operations — where to go and what to do.",
+      dash_btn_arrived: "Mark as Arrived at Location",
+      dash_btn_loaded: "Confirm Loading Complete",
+      dash_note: "This driver view is a simple prototype. Operations can update instructions per driver.",
+      dash_msg_arrived: "Arrival confirmed. Dispatch will see this status.",
+      dash_msg_loaded: "Loading confirmed. You are ready to depart.",
+      dash_welcome_prefix: "Welcome, ",
+      dash_driver_info: "Driver ID: ",
+      dash_company_info: " · Company: ",
+      dash_truck_info: " · Truck: ",
+      dash_no_assign: "No active assignment yet. Please wait for dispatch instructions.",
+      dash_assign_text: "Next location: {city}. Instructions: {note}",
+
+      tl1_label: "1. Go to:",
+      tl1_desc: "Follow dispatch instructions for this location.",
+      tl2_label: "2. Confirm arrival",
+      tl2_desc: "Use \"Mark as Arrived\" when you reach the location.",
+      tl3_label: "3. Confirm loading",
+      tl3_desc: "Use \"Confirm Loading Complete\" after finishing loading.",
+
+      sup_title: "Customer Support",
+      sup_phone_label: "Phone:",
+      sup_email_label: "Email:",
+      sup_fax_label: "Fax:",
+      foot_portal: "Driver Portal"
+    },
+
+    ar: {
+      hdr_sub: "SMART LOAD – بوابة السائق",
+      hdr_tag: "دخول الإداري والسائق",
+
+      land_title: "من يستخدم هذه البوابة؟",
+      land_sub: "اختر الدور المناسب للمتابعة.",
+      land_admin_title: "أنا إداري",
+      land_driver_title: "أنا سائق",
+      land_admin_btn: "دخول لوحة الإدارة",
+      land_driver_btn: "المتابعة كسائق",
+
+      login_title: "تسجيل دخول السائق",
+      login_sub: "أدخل رقم السائق وكود الشركة.",
+      login_back: "⬅ رجوع",
+      login_driverId_label: "رقم السائق",
+      login_company_label: "كود الشركة",
+      login_btn: "تسجيل الدخول كسائق",
+      login_error_missing: "الرجاء إدخال رقم السائق وكود الشركة.",
+      login_generic: "تم تسجيل الدخول كسائق تجريبي.",
+
+      dash_logout: "تسجيل خروج",
+      dash_assign_title: "الرحلة الحالية",
+      dash_status_ready: "✅ الحالة: جاهز لاستلام رحلة",
+      dash_status_arrived: "🟡 الحالة: وصلت إلى الموقع وأنتظر التحميل",
+      dash_status_loaded: "✅ الحالة: تم التحميل – جاهز للمغادرة",
+      dash_route_title: "مسار اليوم والتعليمات",
+      dash_route_sub: "إرشادات بسيطة من العمليات — إلى أين تذهب وماذا تفعل.",
+      dash_btn_arrived: "تأكيد الوصول للموقع",
+      dash_btn_loaded: "تأكيد إتمام التحميل",
+      dash_note: "هذه واجهة تجريبية بسيطة، ويمكن للإدارة تحديث التعليمات لكل سائق.",
+      dash_msg_arrived: "تم تأكيد الوصول، سيتم عرض الحالة لقسم العمليات.",
+      dash_msg_loaded: "تم تأكيد التحميل، يمكنك المغادرة الآن.",
+      dash_welcome_prefix: "مرحبًا، ",
+      dash_driver_info: "رقم السائق: ",
+      dash_company_info: " · الشركة: ",
+      dash_truck_info: " · الشاحنة: ",
+      dash_no_assign: "لا توجد رحلة مفعّلة حاليًا، يرجى انتظار توجيهات قسم العمليات.",
+      dash_assign_text: "الوجهة التالية: {city}. التعليمات: {note}",
+
+      tl1_label: "1. التوجّه إلى:",
+      tl1_desc: "اتبع تعليمات قسم العمليات لهذا الموقع.",
+      tl2_label: "2. تأكيد الوصول",
+      tl2_desc: "استخدم زر \"تأكيد الوصول\" عند الوصول للموقع.",
+      tl3_label: "3. تأكيد التحميل",
+      tl3_desc: "استخدم زر \"تأكيد إتمام التحميل\" بعد الانتهاء.",
+
+      sup_title: "خدمة العملاء",
+      sup_phone_label: "الهاتف:",
+      sup_email_label: "البريد الإلكتروني:",
+      sup_fax_label: "الفاكس:",
+      foot_portal: "بوابة السائق"
+    }
+  };
+
+  var currentLang = "en";
+
+  var demoDrivers = [
+    {
+      driverId: "1023",
+      companyCode: "LXPRT",
+      nameEn: "Ahmed",
+      nameAr: "أحمد",
+      truck: "TRK-12",
+      nextCityEn: "Riyadh DC",
+      nextCityAr: "مستودع الرياض",
+      noteEn: "Pickup return load to Jeddah before 16:00.",
+      noteAr: "استلام حمولة راجعة إلى جدة قبل الساعة 16:00."
+    },
+    {
+      driverId: "2045",
+      companyCode: "LXPRT",
+      nameEn: "Omar",
+      nameAr: "عمر",
+      truck: "TRK-21",
+      nextCityEn: "Dammam Hub",
+      nextCityAr: "مركز الدمام",
+      noteEn: "Proceed empty to Dammam hub, wait for backhaul load.",
+      noteAr: "توجّه فارغًا إلى مركز الدمام ثم انتظر حمولة العودة."
+    }
+  ];
+
+  var currentDriver = null;
+
+  function getLocalized(driver, key) {
+    if (!driver) return "";
+    if (currentLang === "ar") {
+      return driver[key + "Ar"] || driver[key + "En"] || "";
+    } else {
+      return driver[key + "En"] || driver[key + "Ar"] || "";
+    }
+  }
+
+  // ============ LANGUAGE ============
+  function setLanguage(lang) {
+    currentLang = lang;
+    var t = translations[lang];
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
+
+    document.getElementById("btnLangEn").classList.toggle("active", lang === "en");
+    document.getElementById("btnLangAr").classList.toggle("active", lang === "ar");
+
+    document.getElementById("hdr_sub").textContent = t.hdr_sub;
+    document.getElementById("hdr_tag").textContent = t.hdr_tag;
+
+    document.getElementById("land_title").textContent = t.land_title;
+    document.getElementById("land_sub").textContent = t.land_sub;
+    document.getElementById("land_admin_title").textContent = t.land_admin_title;
+    document.getElementById("land_driver_title").textContent = t.land_driver_title;
+    document.getElementById("land_admin_btn").textContent = t.land_admin_btn;
+    document.getElementById("land_driver_btn").textContent = t.land_driver_btn;
+
+    document.getElementById("login_title").textContent = t.login_title;
+    document.getElementById("login_sub").textContent = t.login_sub;
+    document.getElementById("login_back").textContent = t.login_back;
+    document.getElementById("login_driverId_label").textContent = t.login_driverId_label;
+    document.getElementById("login_company_label").textContent = t.login_company_label;
+    document.getElementById("login_btn").textContent = t.login_btn;
+
+    document.getElementById("dash_logout").textContent = t.dash_logout;
+    document.getElementById("dash_assign_title").textContent = t.dash_assign_title;
+    document.getElementById("dash_route_title").textContent = t.dash_route_title;
+    document.getElementById("dash_route_sub").textContent = t.dash_route_sub;
+    document.getElementById("dash_btn_arrived").textContent = t.dash_btn_arrived;
+    document.getElementById("dash_btn_loaded").textContent = t.dash_btn_loaded;
+    document.getElementById("dash_note").textContent = t.dash_note;
+
+    document.getElementById("sup_title").textContent = t.sup_title;
+    document.getElementById("sup_phone_label").textContent = t.sup_phone_label;
+    document.getElementById("sup_email_label").textContent = t.sup_email_label;
+    document.getElementById("sup_fax_label").textContent = t.sup_fax_label;
+    document.getElementById("foot_portal").textContent = t.foot_portal;
+
+    var footer = document.getElementById("footerBox");
+    footer.className = (lang === "ar") ? "footer-right" : "footer-left";
+
+    document.getElementById("driverId").placeholder =
+      (lang === "en") ? "e.g. 1023" : "مثال: 1023";
+    document.getElementById("companyCode").placeholder =
+      (lang === "en") ? "e.g. LXPRT" : "مثال: LXPRT";
+
+    if (currentDriver) {
+      fillDriverDashboard(currentDriver);
+    }
+  }
+
+  // ============ VIEWS ============
+  function switchView(id) {
+    var views = document.querySelectorAll(".view");
+    for (var i = 0; i < views.length; i++) {
+      views[i].classList.remove("active");
+    }
+    document.getElementById(id).classList.add("active");
+  }
+
+  function goToAdmin() {
+    window.location.href = "admin.html";
+  }
+
+  // ============ LOGIN ============
+  function driverLogin() {
+    var id = document.getElementById("driverId").value.trim();
+    var company = document.getElementById("companyCode").value.trim().toUpperCase();
+    var msg = document.getElementById("driverLoginMsg");
+    var t = translations[currentLang];
+
+    if (!id || !company) {
+      msg.textContent = t.login_error_missing;
+      msg.classList.add("hint-error");
+      return;
+    }
+    msg.classList.remove("hint-error");
+
+    var found = null;
+    for (var i = 0; i < demoDrivers.length; i++) {
+      var d = demoDrivers[i];
+      if (d.driverId === id && d.companyCode === company) {
+        found = d;
+        break;
+      }
+    }
+
+    if (found) {
+      currentDriver = found;
+      msg.textContent = "";
+      fillDriverDashboard(found);
+      switchView("view-driver-dashboard");
+    } else {
+      currentDriver = {
+        driverId: id,
+        companyCode: company,
+        nameEn: "Driver " + id,
+        nameAr: "السائق " + id,
+        truck: "—",
+        nextCityEn: "To be assigned",
+        nextCityAr: "سيتم التحديد لاحقًا",
+        noteEn: "Please contact dispatch for your next assignment.",
+        noteAr: "يرجى التواصل مع قسم العمليات لمعرفة الرحلة القادمة."
+      };
+      msg.textContent = t.login_generic;
+      fillDriverDashboard(currentDriver);
+      switchView("view-driver-dashboard");
+    }
+  }
+
+  // ============ DASHBOARD ============
+  function fillDriverDashboard(d) {
+    var t = translations[currentLang];
+
+    var name = getLocalized(d, "name");
+    var city = getLocalized(d, "nextCity");
+    var note = getLocalized(d, "note");
+
+    document.getElementById("driverWelcome").textContent =
+      t.dash_welcome_prefix + name;
+
+    var info = t.dash_driver_info + d.driverId +
+               t.dash_company_info + d.companyCode;
+    if (d.truck !== "—") {
+      info += t.dash_truck_info + d.truck;
+    }
+    document.getElementById("driverInfo").textContent = info;
+
+    var statusEl = document.getElementById("driverStatusPill");
+    statusEl.textContent = t.dash_status_ready;
+    statusEl.className = "status-pill status-ok";
+
+    var assignEl = document.getElementById("currentAssignment");
+    if (!city || !note) {
+      assignEl.textContent = t.dash_no_assign;
+    } else {
+      assignEl.textContent =
+        t.dash_assign_text.replace("{city}", city).replace("{note}", note);
+    }
+
+    updateTimeline(city);
+    document.getElementById("driverActionMsg").textContent = "";
+  }
+
+  function updateTimeline(city) {
+    var t = translations[currentLang];
+    var tl = document.getElementById("driverTimeline");
+    tl.innerHTML =
+      '<div class="timeline-item">' +
+        '<div class="timeline-label">' + t.tl1_label + ' ' + (city || "") + '</div>' +
+        '<div>' + t.tl1_desc + '</div>' +
+      '</div>' +
+      '<div class="timeline-item">' +
+        '<div class="timeline-label">' + t.tl2_label + '</div>' +
+        '<div>' + t.tl2_desc + '</div>' +
+      '</div>' +
+      '<div class="timeline-item">' +
+        '<div class="timeline-label">' + t.tl3_label + '</div>' +
+        '<div>' + t.tl3_desc + '</div>' +
+      '</div>';
+  }
+
+  // ============ BUTTON ACTIONS ============
+  function markArrived() {
+    var t = translations[currentLang];
+    var statusEl = document.getElementById("driverStatusPill");
+    statusEl.textContent = t.dash_status_arrived;
+    statusEl.className = "status-pill status-warn";
+    document.getElementById("driverActionMsg").textContent = t.dash_msg_arrived;
+  }
+
+  function markLoaded() {
+    var t = translations[currentLang];
+    var statusEl = document.getElementById("driverStatusPill");
+    statusEl.textContent = t.dash_status_loaded;
+    statusEl.className = "status-pill status-ok";
+    document.getElementById("driverActionMsg").textContent = t.dash_msg_loaded;
+  }
+
+  // ============ LOGOUT ============
+  function driverLogout() {
+    currentDriver = null;
+    document.getElementById("driverId").value = "";
+    document.getElementById("companyCode").value = "";
+    document.getElementById("driverLoginMsg").textContent = "";
+    switchView("view-driver-login");
+  }
+
+  // نربط الدوال في الـ window عشان onclick يلاقيها
+  window.setLanguage   = setLanguage;
+  window.switchView    = switchView;
+  window.goToAdmin     = goToAdmin;
+  window.driverLogin   = driverLogin;
+  window.markArrived   = markArrived;
+  window.markLoaded    = markLoaded;
+  window.driverLogout  = driverLogout;
+
+  // تشغيل اللغة الافتراضية بعد تحميل الصفحة
+  window.addEventListener("DOMContentLoaded", function () {
+    setLanguage("en");
+  });
+</script>
+
+</body>
+</html>
