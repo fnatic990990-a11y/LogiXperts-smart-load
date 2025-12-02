@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Smart Load Analyzer – Admin Portal</title>
+  <title>Smart Load Analyzer – Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Leaflet CSS -->
@@ -16,11 +16,11 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #050910;
-      --bg-elevated: #0b1220;
-      --accent: #00b894;
-      --accent-soft: rgba(0, 184, 148, 0.14);
-      --border-subtle: rgba(255, 255, 255, 0.07);
+      --bg: #020617;
+      --bg-elevated: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.16);
+      --border-subtle: rgba(148, 163, 184, 0.4);
       --text-main: #f9fafb;
       --text-muted: #9ca3af;
       --danger: #f97373;
@@ -35,7 +35,7 @@
     }
 
     body {
-      background: radial-gradient(circle at top left, #111827 0, #020617 45%);
+      background: radial-gradient(circle at top left, #020617 0, #000 60%);
       color: var(--text-main);
       min-height: 100vh;
       padding: 16px;
@@ -61,12 +61,17 @@
     }
 
     .brand-title {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 600;
     }
 
     .brand-sub {
       font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .company-code {
+      font-size: 0.78rem;
       color: var(--text-muted);
     }
 
@@ -78,12 +83,23 @@
       justify-content: flex-end;
     }
 
-    .lang-toggle button,
     .small-pill {
       border-radius: 999px;
       padding: 6px 10px;
       border: 1px solid var(--border-subtle);
       background: rgba(15, 23, 42, 0.8);
+      font-size: 0.8rem;
+    }
+
+    .small-pill span {
+      opacity: 0.9;
+    }
+
+    .lang-toggle button {
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
       color: var(--text-main);
       font-size: 0.8rem;
       cursor: pointer;
@@ -92,15 +108,6 @@
     .lang-toggle button.active {
       border-color: var(--accent);
       background: var(--accent-soft);
-    }
-
-    .small-pill span {
-      opacity: 0.8;
-    }
-
-    .company-code {
-      font-size: 0.78rem;
-      color: var(--text-muted);
     }
 
     nav.tabs {
@@ -130,11 +137,11 @@
     }
 
     main {
-      border-radius: 16px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, #020617 0, #020617 60%);
+      border: 1px solid rgba(148, 163, 184, 0.45);
       padding: 16px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.9);
     }
 
     section.tab {
@@ -167,13 +174,13 @@
 
     .grid-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
     }
 
     .card {
-      background: radial-gradient(circle at top left, #020617 0, #020617 45%);
-      border-radius: 16px;
+      background: radial-gradient(circle at top left, #020617 0, #020617 60%);
+      border-radius: 18px;
       border: 1px solid var(--border-subtle);
       padding: 14px 16px;
     }
@@ -203,8 +210,8 @@
     input,
     select,
     textarea {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 11px;
       border: 1px solid rgba(55, 65, 81, 0.9);
       padding: 7px 9px;
       color: var(--text-main);
@@ -238,8 +245,9 @@
     }
 
     .btn-primary {
-      background: var(--accent);
-      color: #fff;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      color: #020617;
+      font-weight: 600;
     }
 
     .btn-outline {
@@ -266,10 +274,10 @@
     }
 
     .kpi-card {
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 10px 12px;
       background: radial-gradient(circle at top left, #020617 0, #020617 60%);
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.55);
     }
 
     .kpi-label {
@@ -288,7 +296,7 @@
       font-size: 0.7rem;
       padding: 2px 7px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.6);
       display: inline-block;
       color: var(--text-muted);
     }
@@ -298,7 +306,7 @@
       height: 260px;
       border-radius: 14px;
       margin-top: 8px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.3);
     }
 
     canvas {
@@ -332,9 +340,28 @@
       font-size: 0.73rem;
       border-radius: 999px;
       padding: 2px 7px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.55);
       color: var(--text-muted);
       display: inline-block;
+    }
+
+    .ai-tools-card h4 {
+      font-size: 0.88rem;
+      margin-top: 6px;
+      margin-bottom: 2px;
+    }
+
+    .ai-output-box {
+      margin-top: 8px;
+      padding: 8px 9px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.96);
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      max-height: 210px;
+      overflow-y: auto;
     }
 
     .status-dot {
@@ -344,37 +371,6 @@
       display: inline-block;
       margin-right: 4px;
       background: var(--accent);
-    }
-
-    .ai-tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 14px;
-      margin-top: 10px;
-    }
-
-    .ai-card {
-      border-radius: 16px;
-      padding: 12px 14px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-    }
-
-    .ai-output-box {
-      margin-top: 10px;
-      padding: 10px 11px;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      background: rgba(15, 23, 42, 0.9);
-      font-size: 0.8rem;
-      white-space: pre-wrap;
-      line-height: 1.5;
-      max-height: 260px;
-      overflow-y: auto;
-    }
-
-    .danger-text {
-      color: var(--danger);
     }
 
     .support-footer {
@@ -411,7 +407,7 @@
         <div class="brand-sub" data-i18n="brandSubtitle">
           Manage your company profile, analyze trips, and optimize truck loads.
         </div>
-        <div class="company-code" id="companyCodeLabel">
+        <div class="company-code">
           Company code: <span id="companyCodeValue">–</span>
         </div>
       </div>
@@ -534,7 +530,7 @@
                 />
               </div>
 
-              <div class="grid-3">
+              <div class="grid-3" style="margin-top:4px;">
                 <div>
                   <label for="signupAvgLoad" data-i18n="fieldAvgLoad">
                     Current average load (%)
@@ -575,7 +571,7 @@
                 </div>
               </div>
 
-              <div class="grid-2" style="margin-top: 6px">
+              <div class="grid-2" style="margin-top:6px;">
                 <div>
                   <label for="signupEmail" data-i18n="fieldEmail">Email</label>
                   <input
@@ -658,7 +654,7 @@
           </div>
         </div>
 
-        <div class="grid-2" style="margin-top: 14px">
+        <div class="grid-2" style="margin-top:14px;">
           <div class="card">
             <h3 data-i18n="mapTitle">Main lanes (example)</h3>
             <p class="small-muted" data-i18n="mapDesc">
@@ -689,7 +685,7 @@
           </p>
         </div>
 
-        <div class="grid-2">
+        <div class="grid-3">
           <div class="card">
             <h3 data-i18n="manualTripTitle">Add a trip manually</h3>
             <form id="manualTripForm">
@@ -821,70 +817,54 @@
 
             <p id="csvStatus" class="small-muted"></p>
           </div>
-        </div>
 
-        <!-- NEW AI TOOLS SECTION -->
-        <section id="aiToolsSection" class="card" style="margin-top: 14px">
-          <h2 data-i18n="aiToolsTitle">AI Optimization Tools</h2>
-          <p class="small-muted" data-i18n="aiToolsSubtitle">
-            These tools use your real trips data from the database to generate
-            diagnostics, optimization ideas, and professional reports.
-          </p>
+          <!-- AI tools card -->
+          <div class="card ai-tools-card">
+            <h3 data-i18n="aiToolsTitle">AI Optimization Tools</h3>
+            <p class="small-muted" data-i18n="aiToolsSubtitle">
+              Uses your trips data to run detailed diagnostics and generate a
+              PDF report for management.
+            </p>
 
-          <div class="ai-tools-grid">
-            <!-- AI Trip Analyzer -->
-            <div class="ai-card" id="aiTripAnalyzerCard">
-              <h3 data-i18n="aiTripAnalyzerTitle">
-                AI Trip Analyzer (Detailed)
-              </h3>
-              <p class="small-muted" data-i18n="aiTripAnalyzerDesc">
-                Uses your real trips data to detect low-utilization lanes, empty
-                runs, cost hotspots, and CO₂ issues — then generates optimization
-                ideas.
+            <h4 data-i18n="aiTripAnalyzerTitle">AI Trip Analyzer (Detailed)</h4>
+            <p class="small-muted" data-i18n="aiTripAnalyzerDesc">
+              Detects low-utilization lanes, empty runs, cost hotspots, and CO₂
+              issues.
+            </p>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="runTripAIAnalysis()"
+              data-i18n="aiTripAnalyzerRun"
+            >
+              Run AI analysis on trips
+            </button>
+            <div id="aiTripAnalyzerOutput" class="ai-output-box" style="margin-bottom:8px;">
+              <p data-i18n="aiTripAnalyzerHint">
+                Once you click the button, the AI will read all your trips from
+                the database and show a detailed diagnostic report here.
               </p>
-
-              <button
-                class="btn btn-primary btn-sm"
-                onclick="runTripAIAnalysis()"
-                data-i18n="aiTripAnalyzerRun"
-              >
-                Run AI analysis on trips
-              </button>
-
-              <div id="aiTripAnalyzerOutput" class="ai-output-box">
-                <p data-i18n="aiTripAnalyzerHint">
-                  Once you click the button, the AI will read all your trips
-                  from the database and show a detailed diagnostic report here.
-                </p>
-              </div>
             </div>
 
-            <!-- AI PDF Report -->
-            <div class="ai-card" id="aiPdfReportCard">
-              <h3 data-i18n="aiPdfTitle">AI PDF Sustainability & Cost Report</h3>
-              <p class="small-muted" data-i18n="aiPdfDesc">
-                Generates a professional PDF report that summarizes your load
-                utilization, empty trips, costs, and CO₂ emissions based on the
-                AI trip analysis.
+            <h4 data-i18n="aiPdfTitle">AI PDF Sustainability & Cost Report</h4>
+            <p class="small-muted" data-i18n="aiPdfDesc">
+              Generates a professional PDF summary of load, empty trips, cost
+              and CO₂ for your company.
+            </p>
+            <button
+              class="btn btn-outline btn-sm"
+              onclick="generatePdfAIReport()"
+              data-i18n="aiPdfButton"
+            >
+              Generate PDF report
+            </button>
+            <div id="aiPdfReportStatus" class="ai-output-box">
+              <p data-i18n="aiPdfHint">
+                Run the AI Trip Analyzer first for best results, then click PDF
+                to download the report.
               </p>
-
-              <button
-                class="btn btn-outline btn-sm"
-                onclick="generatePdfAIReport()"
-                data-i18n="aiPdfButton"
-              >
-                Generate PDF report
-              </button>
-
-              <div id="aiPdfReportStatus" class="ai-output-box">
-                <p data-i18n="aiPdfHint">
-                  Run the AI Trip Analyzer first for best results, then click
-                  the PDF button to download a full report for your company.
-                </p>
-              </div>
             </div>
           </div>
-        </section>
+        </div>
       </section>
 
       <!-- OPTIMIZATION TAB -->
@@ -1104,7 +1084,7 @@
         btnImportCsv: "Import CSV",
         aiToolsTitle: "AI Optimization Tools",
         aiToolsSubtitle:
-          "These tools use your real trips data from the database to generate diagnostics, optimization ideas, and professional reports.",
+          "These tools use your real trips data to generate diagnostics and management-ready reports.",
         aiTripAnalyzerTitle: "AI Trip Analyzer (Detailed)",
         aiTripAnalyzerDesc:
           "Uses your real trips data to detect low-utilization lanes, empty runs, cost hotspots, and CO₂ issues — then generates optimization ideas.",
@@ -1119,7 +1099,7 @@
           "Error while reading trips. Please try again later.",
         aiPdfTitle: "AI PDF Sustainability & Cost Report",
         aiPdfDesc:
-          "Generates a professional PDF report that summarizes your load utilization, empty trips, costs, and CO₂ emissions based on the AI trip analysis.",
+          "Generates a professional PDF report that summarizes your load utilization, empty trips, costs, and CO₂ emissions.",
         aiPdfButton: "Generate PDF report",
         aiPdfHint:
           "Run the AI Trip Analyzer first for best results, then click the PDF button to download a full report for your company.",
@@ -1213,7 +1193,7 @@
         btnImportCsv: "استيراد الملف",
         aiToolsTitle: "أدوات الذكاء الاصطناعي",
         aiToolsSubtitle:
-          "تستخدم هذه الأدوات بيانات الرحلات الفعلية من قاعدة البيانات لتوليد تشخيصات واقتراحات وتحارير احترافية.",
+          "تستخدم هذه الأدوات بيانات الرحلات الفعلية لتوليد تشخيصات وتقارير جاهزة للإدارة.",
         aiTripAnalyzerTitle: "محلل الرحلات بالذكاء الاصطناعي (تفصيلي)",
         aiTripAnalyzerDesc:
           "يحلل بيانات الرحلات الفعلية لاكتشاف انخفاض استغلال الحمولة، والرحلات الفارغة، ونقاط التكلفة العالية، ومشاكل الانبعاثات، ثم يقترح أفكار تحسين.",
@@ -1228,7 +1208,7 @@
           "حدث خطأ أثناء قراءة بيانات الرحلات. حاول مرة أخرى لاحقًا.",
         aiPdfTitle: "تقرير PDF للتكلفة والاستدامة (ذكاء اصطناعي)",
         aiPdfDesc:
-          "ينشئ تقرير PDF احترافي يختصر استغلال الحمولة، الرحلات الفارغة، التكاليف، وانبعاثات CO₂ بناءً على تحليل الرحلات.",
+          "ينشئ تقرير PDF احترافي يختصر استغلال الحمولة، الرحلات الفارغة، التكاليف، وانبعاثات CO₂.",
         aiPdfButton: "إنشاء تقرير PDF",
         aiPdfHint:
           "لأفضل نتيجة، قم أولاً بتشغيل محلل الرحلات بالذكاء الاصطناعي، ثم اضغط زر PDF لتحميل التقرير لشركتك.",
@@ -1291,11 +1271,10 @@
 
     // ===================== FIREBASE INIT =====================
     const firebaseConfig = {
-      // TODO: ضع إعدادات Firebase الخاصة بمشروعك هنا
+      // نفس القيم اللي كنت مستخدمها في المشروع السابق
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_AUTH_DOMAIN",
       projectId: "YOUR_PROJECT_ID",
-      // إذا عندك بقية الإعدادات (storageBucket, appId,…) أضفها هنا
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -1307,15 +1286,41 @@
     let loadChart = null;
     let lastAIReportText = "";
 
-    // ===================== TABS =====================
+    // ===================== TABS + ACCESS CONTROL =====================
     document.querySelectorAll("nav.tabs button").forEach((btn) => {
       btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-tab-target");
+
+        // حظر الدخول على التابات بدون تسجيل
+        if (targetId !== "loginTab" && !currentUser) {
+          const loginStatus = document.getElementById("loginStatus");
+          if (loginStatus) {
+            loginStatus.textContent =
+              currentLang === "ar"
+                ? "رجاءً قم بتسجيل الدخول أو إنشاء حساب شركة أولًا للوصول لهذه الصفحات."
+                : "Please login or sign up first to access these sections.";
+          }
+
+          // رجع على تبويب اللوجين
+          document
+            .querySelectorAll("nav.tabs button")
+            .forEach((b) => b.classList.remove("active"));
+          const loginBtn = document.querySelector(
+            "button[data-tab-target='loginTab']"
+          );
+          if (loginBtn) loginBtn.classList.add("active");
+
+          document.querySelectorAll("section.tab").forEach((tab) => {
+            tab.classList.toggle("active", tab.id === "loginTab");
+          });
+          return;
+        }
+
         document
           .querySelectorAll("nav.tabs button")
           .forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
-        const targetId = btn.getAttribute("data-tab-target");
         document.querySelectorAll("section.tab").forEach((tab) => {
           tab.classList.toggle("active", tab.id === targetId);
         });
@@ -1531,6 +1536,12 @@
         document.getElementById("companyCodeValue").textContent = "–";
         document.getElementById("currentCompanyNameLabel").textContent =
           t("noCompany");
+
+        // رجّع تبويب اللوجين
+        const loginBtn = document.querySelector(
+          "button[data-tab-target='loginTab']"
+        );
+        if (loginBtn) loginBtn.click();
       } catch (err) {
         console.error(err);
       }
@@ -1589,32 +1600,31 @@
       const isEmpty = document.getElementById("tripIsEmpty").value === "yes";
 
       try {
-    await db
-      .collection("companies")
-      .doc(currentUser.uid)
-      .collection("trips")
-      .add({
-        origin,
-        destination,
-        distanceKm: distance,
-        loadUtilization: loadUtil,
-        costSAR: cost,
-        co2Kg: co2,
-        isReturnTrip: isReturn,
-        isEmpty: isEmpty,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+        await db
+          .collection("companies")
+          .doc(currentUser.uid)
+          .collection("trips")
+          .add({
+            origin,
+            destination,
+            distanceKm: distance,
+            loadUtilization: loadUtil,
+            costSAR: cost,
+            co2Kg: co2,
+            isReturnTrip: isReturn,
+            isEmpty: isEmpty,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
 
-    statusEl.textContent = "Trip added.";
-    manualTripForm.reset();
-} catch (err) {
-    console.error(err);
-    statusEl.textContent = "Error adding trip: " + err.message;
-}
-
+        statusEl.textContent = "Trip added.";
+        manualTripForm.reset();
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Error adding trip: " + err.message;
+      }
     });
 
-    // ===================== CSV IMPORT (MINIMAL PARSER) =====================
+    // ===================== CSV IMPORT =====================
     async function importTripsFromCsv() {
       const fileInput = document.getElementById("csvFileInput");
       const statusEl = document.getElementById("csvStatus");
