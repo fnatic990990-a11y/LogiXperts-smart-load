@@ -290,7 +290,6 @@
     .hint{font-size:11px;color:var(--muted);margin-top:4px;}
     .hint-error{color:#fecaca;}
 
-    /* دعم خدمة العملاء في الأسفل */
     .support-footer{
       margin-top:16px;
       display:flex;
@@ -338,29 +337,6 @@
     crossorigin=""
     defer
   ></script>
-
-  <!-- Firebase (Compat SDKs للمتصفح العادي) -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
-
-  <script>
-    // نفس القيم اللي أرسلتها لي من Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyAjbvQo7NrGZiFbFbdY3a7UtDjlv0SwU3w",
-      authDomain: "smart-load-analyzer-56cb2.firebaseapp.com",
-      projectId: "smart-load-analyzer-56cb2",
-      storageBucket: "smart-load-analyzer-56cb2.firebasestorage.app",
-      messagingSenderId: "253721588070",
-      appId: "1:253721588070:web:c24bc2fbc27c2fba9e18a7",
-      measurementId: "G-60RF97SGWN"
-    };
-
-    // تهيئة Firebase لموقع HTML عادي
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db   = firebase.firestore();
-  </script>
 </head>
 <body>
   <div class="app">
@@ -374,7 +350,6 @@
           </div>
         </div>
 
-        <!-- زر الرجوع لصفحة المستخدم -->
         <a href="index.html" id="back_link" class="back-link">
           ← Back to role selection
         </a>
@@ -758,7 +733,41 @@
     </footer>
   </div>
 
-  <script>
+  <!-- ===== كل الجافاسكربت داخل module واحد مع Firebase ===== -->
+  <script type="module">
+    // Firebase modular imports من CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      setDoc,
+      addDoc,
+      getDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    // نفس إعدادات مشروعك
+    const firebaseConfig = {
+      apiKey: "AIzaSyAjbvQo7NrGZiFbFbdY3a7UtDjlv0SwU3w",
+      authDomain: "smart-load-analyzer-56cb2.firebaseapp.com",
+      projectId: "smart-load-analyzer-56cb2",
+      storageBucket: "smart-load-analyzer-56cb2.firebasestorage.app",
+      messagingSenderId: "253721588070",
+      appId: "1:253721588070:web:c24bc2fbc27c2fba9e18a7",
+      measurementId: "G-60RF97SGWN"
+    };
+
+    // تهيئة Firebase
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
     // ===== اللغة =====
     let currentLang = "en";
 
@@ -841,7 +850,6 @@
         chart_title: "Before vs After Optimization",
         chart_sub: "Average load improvement",
 
-        // Support + back link
         support_title: "Customer Support",
         support_phone_label: "Phone:",
         support_email_label: "Email:",
@@ -1013,7 +1021,6 @@
       document.getElementById("chart_title").innerText = t.chart_title;
       document.getElementById("chart_sub").innerText = t.chart_sub;
 
-      // دعم خدمة العملاء + زر الرجوع
       document.getElementById("support_title").innerText = t.support_title;
       document.getElementById("support_phone_label").innerText = t.support_phone_label;
       document.getElementById("support_email_label").innerText = t.support_email_label;
@@ -1063,7 +1070,6 @@
 
     let dashboardChart, optChart, mapInstance;
     let isLoggedIn = false;
-    let customAccounts = [];
     let currentCompanyId = null;
     let currentCompanyData = null;
 
@@ -1106,7 +1112,7 @@
       }
     }
 
-    // ===== Firebase-based sign up =====
+    // ===== signUp حقيقي مع companyCode =====
     async function signUp() {
       const name = document.getElementById("signup-name").value.trim();
       const email = document.getElementById("signup-email").value.trim().toLowerCase();
@@ -1123,21 +1129,33 @@
       }
 
       try {
-        const userCred = await auth.createUserWithEmailAndPassword(email, password);
+        // إنشاء مستخدم في Auth
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCred.user.uid;
 
-        await db.collection("companies").doc(uid).set({
+        // توليد كود الشركة تلقائي
+        let base = name.replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 4);
+        if (!base) base = "COMP";
+        const random = Math.floor(100 + Math.random() * 900); // 100-999
+        const companyCode = base + random; // مثال: LOGI123
+
+        // حفظ بيانات الشركة في Firestore
+        await setDoc(doc(db, "companies", uid), {
           companyName: name,
           email,
+          companyCode,
           fleetSize: isNaN(fleet) ? 0 : fleet,
           plan,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: serverTimestamp()
         });
 
-        msg.textContent = currentLang === "ar"
-          ? "تم إنشاء حساب الشركة. يمكنك تسجيل الدخول الآن."
-          : "Company account created. You can now log in.";
+        const msgEn =
+          `Company account created. Your company code: ${companyCode}. You can now log in.`;
+        const msgAr =
+          `تم إنشاء حساب الشركة. كود الشركة الخاص بك: ${companyCode}. يمكنك تسجيل الدخول الآن.`;
+        msg.textContent = currentLang === "ar" ? msgAr : msgEn;
 
+        // تعبئة فورم الدخول تلقائيًا
         document.getElementById("company").value = email;
         document.getElementById("password").value = password;
 
@@ -1149,28 +1167,37 @@
       }
     }
 
-    // ===== Firebase-based login =====
+    // ===== Login حقيقي مع قراءة بيانات الشركة =====
     async function demoLogin() {
       const email = document.getElementById("company").value.trim().toLowerCase();
       const password = document.getElementById("password").value;
       const errorEl = document.getElementById("login-error");
 
       try {
-        const userCred = await auth.signInWithEmailAndPassword(email, password);
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
         const uid = userCred.user.uid;
 
-        const companyDoc = await db.collection("companies").doc(uid).get();
+        const companyRef = doc(db, "companies", uid);
+        const companySnap = await getDoc(companyRef);
 
-        if (!companyDoc.exists) {
+        if (!companySnap.exists()) {
           errorEl.textContent = currentLang === "ar"
             ? "لم يتم العثور على بيانات الشركة."
             : "Company data not found.";
           return;
         }
 
-        const companyData = companyDoc.data();
+        const companyData = companySnap.data();
         handleLoginSuccess(uid, companyData);
         errorEl.textContent = "";
+
+        // عرض كود الشركة في تلميح بسيط
+        if (companyData.companyCode) {
+          const hint = currentLang === "ar"
+            ? `تم تسجيل الدخول. كود الشركة: ${companyData.companyCode}.`
+            : `Logged in. Company code: ${companyData.companyCode}.`;
+          document.getElementById("login_hint").textContent = hint;
+        }
       } catch (err) {
         console.error(err);
         errorEl.textContent = currentLang === "ar"
@@ -1349,13 +1376,13 @@
     async function saveOptimizationResult(companyId, data) {
       if (!db || !companyId) return;
       try {
-        await db.collection("companies")
-          .doc(companyId)
-          .collection("optimizations")
-          .add({
+        await addDoc(
+          collection(db, "companies", companyId, "optimizations"),
+          {
             ...data,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
+            createdAt: serverTimestamp()
+          }
+        );
       } catch (err) {
         console.error("Error saving optimization:", err);
       }
@@ -1511,6 +1538,14 @@
       applyLanguage();
       populateOptimizationTableInitial();
     });
+
+    // ربط الدوال بـ window ليتعرف عليها الـ HTML
+    window.toggleLanguage  = toggleLanguage;
+    window.togglePassword  = togglePassword;
+    window.demoLogin       = demoLogin;
+    window.signUp          = signUp;
+    window.runOptimization = runOptimization;
+    window.analyzeCSV      = analyzeCSV;
   </script>
 </body>
 </html>
